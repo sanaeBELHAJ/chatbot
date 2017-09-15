@@ -40,7 +40,7 @@ bot.on('conversationUpdate', function(message){
        
     }
 });
-//Bienvenu aux utilisateurs ajouté ou lors de nouvelle conversation
+//Bienvenu aux utilisateurs ajouté ou lors de nouvelle conversation ou quitter conversation
 bot.on('contactRelationUpdate', function(message){
     if (message.action === 'add') {
         var name = message.user ? message.user.name : null;
@@ -48,12 +48,16 @@ bot.on('contactRelationUpdate', function(message){
                 .address(message.address)
                 .text("Bonjour %s... id : %s ", name , message.address.bot.id|| 'Comment ca va?');
         bot.send(reply);
-    } 
+    } else if(message.action === 'remove'){
+        var Id_Bot = message.address.bot.id;
+        var name = message.user ? message.user.name : null;
+        var reply = new botbuilder.Message()
+            .address(message.address)
+            .text(`${name} ${Id_Bot} a quitté la discution`);
+        bot.send(reply);
+    }
 });
 
-bot.on('deleteUserData', function (message) {
-      // 
-});
 
 });
 
