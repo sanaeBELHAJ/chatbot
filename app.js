@@ -16,58 +16,46 @@ server.post('/api/messages', connector.listen());
 
 //Reply by echoing 
 var bot =  new botbuilder.UniversalBot(connector, function(session){
-//session.send('you have tapped : %s | [Length : %s]', session.message.text, session.message.text.lengh);
-//session.send(`you have tapped: ${session.message.text}`);
-//session.send(`type: ${session.message.type}`);
 //trouver une solution
-bot.on('typing',function(){
+bot.on('typing',function(response){
+    session.send(response);
     session.send(`TEST TEST`);
 });
 
-/*bot.on('contactRelationUpdate',function(){
-    session.send(`Bonjour je suis lààààà!`);
-});*/
 
 bot.on('conversationUpdate', function(message){
     if(message.membersAdded && message.membersAdded.length > 0){
         var membersAdded = message.membersAdded
             .map(function(x){
-                var isSelf = x.id === message.address.bot.id;
-                return (isSelf ? message.address.bot.name : x.name) || ' ' + '(Id = ' + x.id + ')'
+            //Verifier si il s'agit pas d'un bot
+            if (x.id != message.address.bot.id) {
+                var membersAdded = x.name || ' ' + '(Id=' + x.id + ' )';
+                bot.send(new botbuilder.Message()
+                    .address(message.address)
+                    .text('Bienvenue   ' + membersAdded + '! il fait beau aujourdhui!')
+                 );      
+            }
             }).join(', '); //sépare le tableau en string
 
-        bot.send(new botbuilder.Message()
-            .address(message.address)
-            .text('Bienvenue ' + membersAdded)
-        );
+       
     }
 });
+//Bienvenu aux utilisateurs ajouté ou lors de nouvelle conversation
 bot.on('contactRelationUpdate', function(message){
     if (message.action === 'add') {
-        console.log('yes');
         var name = message.user ? message.user.name : null;
-        console.log(name);
         var reply = new botbuilder.Message()
                 .address(message.address)
-                .text("Hello %s... Thanks for adding me. Say 'hello' to see some great demos.", name || 'there');
+                .text("Bonjour %s... id : %s ", name , message.address.bot.id|| 'Comment ca va?');
         bot.send(reply);
-    } else {
-        console.log('no');
-        
-        // delete their data
-    }
+    } 
 });
 
 bot.on('deleteUserData', function (message) {
-      // User asked to delete their data
+      // 
 });
-/*session.send(JSON.stringify(session.dialogData));
-session.send(JSON.stringify(session.sessionState));
-session.send(JSON.stringify(session.conversationData));
-session.send(JSON.stringify(session.userData));*/
+
 });
-//repo git envoyer au prof et amelioration de TP 
-//quand je remove un user il doit l'afficher
-//quand user s'ajoute 
-//message wellcome quand j'arrive au conversation 
-// ajouter un bot 
+
+
+
